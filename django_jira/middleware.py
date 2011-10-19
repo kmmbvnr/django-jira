@@ -92,6 +92,14 @@ class JiraExceptionReporterMiddleware:
             issue = settings.JIRA_ISSUE_DEFAULTS.copy()
             issue['summary'] = issue_title
             issue['description'] = issue_message
-        
+
+            if 'components' in settings.JIRA_ISSUE_DEFAULTS:
+                components = []
+                for component_id in settings.JIRA_ISSUE_DEFAULTS['components']:
+                    component = self._soap.factory.create('tns1:RemoteComponent')
+                    component.id = component_id
+                    components.append(component)
+                issue['components'] = components
+
             self._soap.service.createIssue(self._auth, issue)
         
